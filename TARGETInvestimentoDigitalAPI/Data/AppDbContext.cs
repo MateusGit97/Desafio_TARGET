@@ -74,7 +74,6 @@ namespace TARGETInvestimentoDigitalAPI.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.Complemento)
-                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
 

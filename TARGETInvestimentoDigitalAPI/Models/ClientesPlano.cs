@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int IdCliente { get; set; }
         public int IdPlanoVip { get; set; }
+        public bool OferecerPlanoVip { get; set; }
 
         public virtual Cliente IdClienteNavigation { get; set; }
         public virtual PlanoVip IdPlanoVipNavigation { get; set; }

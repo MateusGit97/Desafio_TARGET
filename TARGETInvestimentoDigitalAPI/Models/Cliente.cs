@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace TARGETInvestimentoDigitalAPI.Data
 {
@@ -17,8 +18,11 @@ namespace TARGETInvestimentoDigitalAPI.Data
         public DateTime DataNascimento { get; set; }
         public string Cpf { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<ClientesPlano> ClientesPlanos { get; set; }
+        [JsonIgnore]
         public virtual ICollection<EnderecoCliente> EnderecoClientes { get; set; }
+        [JsonIgnore]
         public virtual ICollection<FinanceiroCliente> FinanceiroClientes { get; set; }
     }
 }
