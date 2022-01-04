@@ -28,6 +28,8 @@ namespace TARGETInvestimentoDigitalAPI.Data
                     .IsUnicode(false)
                     .HasColumnName("CPF");
 
+                entity.Property(e => e.DataCadastro).HasColumnType("date");
+
                 entity.Property(e => e.DataNascimento).HasColumnType("date");
 
                 entity.Property(e => e.NomeCompleto)

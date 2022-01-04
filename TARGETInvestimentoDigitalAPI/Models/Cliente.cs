@@ -17,6 +17,7 @@ namespace TARGETInvestimentoDigitalAPI.Data
         public string NomeCompleto { get; set; }
         public DateTime DataNascimento { get; set; }
         public string Cpf { get; set; }
+        public DateTime DataCadastro { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<ClientesPlano> ClientesPlanos { get; set; }
