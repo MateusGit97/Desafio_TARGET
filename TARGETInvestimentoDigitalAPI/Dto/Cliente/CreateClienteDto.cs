@@ -5,6 +5,8 @@ namespace TARGETInvestimentoDigitalAPI.Dto.Cliente
 {
     public class CreateClienteDto
     {
+        public DateTime DataCadastro { get; set; }
+
         [Required(ErrorMessage ="Nome Completo é obrigatório")]
         public string NomeCompleto { get; set; }
 

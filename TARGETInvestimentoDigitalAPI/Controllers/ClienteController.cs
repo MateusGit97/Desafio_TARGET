@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TARGETInvestimentoDigitalAPI.Data;
@@ -55,6 +56,30 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
             };
 
             return Created("", readClienteDto);
+        }
+
+        [HttpGet("por-periodo")]
+        public IActionResult RecuperaClientesPorDataCadastro([FromQuery] DateTime dataCadastroInicio, [FromQuery] DateTime dataCadastroFim)
+        {
+            IEnumerable<Cliente> clientes = _context.Clientes.Where(cliente => cliente.DataCadastro.Date >= dataCadastroInicio.Date && cliente.DataCadastro.Date <= dataCadastroFim.Date).ToList();
+            if (clientes != null)
+            {
+                IEnumerable<ReadDadosClienteDto> dadosClienteListDto = _mapper.Map<IEnumerable<ReadDadosClienteDto>>(clientes);
+                return Ok(dadosClienteListDto);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("por-renda-mensal")]
+        public IActionResult RecuperaClientesPorRendaMensal([FromQuery] double rendaMensal)
+        {
+            IEnumerable<Cliente> clientes = _context.Clientes.Where(cliente => cliente.FinanceiroClientes.Any(x => x.RendaMensal >= rendaMensal)).ToList();        
+            if (clientes != null)
+            {
+                IEnumerable<ReadDadosClienteDto> dadosClienteListDto = _mapper.Map<IEnumerable<ReadDadosClienteDto>>(clientes);
+                return Ok(dadosClienteListDto);
+            }
+            return NotFound();
         }
     }
 }

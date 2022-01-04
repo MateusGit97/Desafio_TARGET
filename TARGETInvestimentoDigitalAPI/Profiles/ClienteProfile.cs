@@ -11,6 +11,7 @@ namespace TARGETInvestimentoDigitalAPI.Profiles
             CreateMap<CreateClienteDto, Cliente>();
             CreateMap<EnderecoClientesDto, EnderecoCliente>();
             CreateMap<FinanceiroClientesDto, FinanceiroCliente>();
+            CreateMap<Cliente, ReadDadosClienteDto>();
         }
     }
 }
