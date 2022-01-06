@@ -1,8 +1,7 @@
 ﻿namespace TARGETInvestimentoDigitalAPI.Dto.Cliente
 {
-    public class ReadDadosEnderecoClienteDto
+    public class UpdateEnderecoClienteDto
     {
-        public int Id { get; set; }
         public string Logradouro { get; set; }
         public string Bairro { get; set; }
         public string Cidade { get; set; }

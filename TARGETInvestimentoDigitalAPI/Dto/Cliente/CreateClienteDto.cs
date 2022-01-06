@@ -16,7 +16,7 @@ namespace TARGETInvestimentoDigitalAPI.Dto.Cliente
         [Required(ErrorMessage ="CPF é obrigatório")]
         public string Cpf { get; set; }
 
-        public EnderecoClientesDto EnderecoClienteDto { get; set; }
-        public FinanceiroClientesDto FinanceiroClienteDto { get; set; }
+        public CreateEnderecoClientesDto EnderecoClienteDto { get; set; }
+        public CreateFinanceiroClientesDto FinanceiroClienteDto { get; set; }
     }
 }

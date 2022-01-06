@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,15 +83,45 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
             return NotFound();
         }
 
-        //Adicionar aqui o método GET que retorna dados de endereço do cliente.
-        //[HttpGet("dados-endereco-cliente")]
-        //public IActionResult RecuperaDadosDoEnderecoCliente([FromQuery] int idCliente)
-        //{
-        //    EnderecoCliente enderecoCliente = _context.EnderecoClientes.Where(cliente => cliente.IdCliente.Any() == idCliente).ToList();
-        //}
-
-            //Adicionar aqui o método PUT para atualizar dados de endereço do cliente.
-
-            //Adicionar aqui o método GET que retornará o índice de adesão GERAL do plano VIP, para clientes que podem aderir ao plano VIP.
+        [HttpGet("{cpf}/enderecos")]
+        public IActionResult RecuperaDadosDoEnderecoCliente([FromRoute] string cpf)
+        {
+            var cliente = _context.Clientes.Include(x => x.EnderecoClientes).FirstOrDefault(cliente => cliente.Cpf == cpf);
+            if (cliente == null)
+            {
+                return NotFound("Cliente não encontrado.");
+            }
+            var dadosEnderecoClienteDto = _mapper.Map<IEnumerable<ReadDadosEnderecoClienteDto>>(cliente.EnderecoClientes);
+            
+            return Ok(dadosEnderecoClienteDto);
         }
+
+        [HttpPut("{cpf}/enderecos/{idEndereco}")]
+        public IActionResult AlteraEndereco([FromRoute] string cpf, [FromRoute] int idEndereco, [FromBody] UpdateEnderecoClienteDto updateEnderecoCliente)
+        {
+            var cliente = _context.Clientes.FirstOrDefault(cliente => cliente.Cpf == cpf);
+            if (cliente == null)
+            {
+                return NotFound("Cliente não encontrado.");
+            }
+            var endereco = _context.EnderecoClientes.FirstOrDefault(endereco => endereco.Id == idEndereco);
+            if (endereco == null)
+            {
+                return NotFound("Endereco do cliente não encontrado.");
+            }
+
+            endereco.Logradouro = updateEnderecoCliente.Logradouro;
+            endereco.Bairro = updateEnderecoCliente.Bairro;
+            endereco.Cidade = updateEnderecoCliente.Cidade;
+            endereco.Uf = updateEnderecoCliente.Uf;
+            endereco.Cep = updateEnderecoCliente.Cep;
+            endereco.Complemento = updateEnderecoCliente.Complemento;
+
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+
+        //Adicionar aqui o método GET que retornará o índice de adesão GERAL do plano VIP, para clientes que podem aderir ao plano VIP.
+    }
 }

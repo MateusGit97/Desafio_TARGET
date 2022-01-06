@@ -2,7 +2,7 @@
 
 namespace TARGETInvestimentoDigitalAPI.Dto.Cliente
 {
-    public class FinanceiroClientesDto
+    public class CreateFinanceiroClientesDto
     {
         [Required(ErrorMessage = "Renda mensal é obrigatório")]
         public double RendaMensal { get; set; }

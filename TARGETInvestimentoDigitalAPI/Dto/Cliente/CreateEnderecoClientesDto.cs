@@ -2,7 +2,7 @@
 
 namespace TARGETInvestimentoDigitalAPI.Dto.Cliente
 {
-    public class EnderecoClientesDto
+    public class CreateEnderecoClientesDto
     {
         [Required(ErrorMessage = "Logradouro é obrigatório")]
         public string Logradouro { get; set; }
