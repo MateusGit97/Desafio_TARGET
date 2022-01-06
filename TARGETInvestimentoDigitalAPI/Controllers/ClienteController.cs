@@ -122,6 +122,23 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
             return NoContent();
         }
 
-        //Adicionar aqui o método GET que retornará o índice de adesão GERAL do plano VIP, para clientes que podem aderir ao plano VIP.
+        [HttpGet("indice-adesao-geral")]
+        public IActionResult IndiceAdesaoGeral()
+        {
+            double clientesEle = _context.Clientes.Where(cliente => cliente.FinanceiroClientes.Any(x => x.RendaMensal >= 6000)).Count();
+            if (clientesEle == 0)
+            {
+                return NotFound("Nenhum cliente elegível encontrado");
+            }
+            double clientesPlano = _context.ClientesPlanos.Count();
+            if (clientesPlano == 0)
+            {
+                return NotFound("Nenhum cliente com Plano Vip foi emcontrado.");
+            }
+
+            double indiceAdesao = (clientesPlano/clientesEle)*100;
+
+            return Ok(indiceAdesao);
+        }
     }
 }
