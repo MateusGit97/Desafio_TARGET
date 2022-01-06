@@ -22,7 +22,7 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("CadastroCliente")]
         public IActionResult CadastroCliente([FromBody] CreateClienteDto createClienteDto)
         {
             IList<string> erros = Validacao.GetValidationErrors(createClienteDto).ToList();
@@ -81,5 +81,16 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
             }
             return NotFound();
         }
-    }
+
+        //Adicionar aqui o método GET que retorna dados de endereço do cliente.
+        //[HttpGet("dados-endereco-cliente")]
+        //public IActionResult RecuperaDadosDoEnderecoCliente([FromQuery] int idCliente)
+        //{
+        //    EnderecoCliente enderecoCliente = _context.EnderecoClientes.Where(cliente => cliente.IdCliente.Any() == idCliente).ToList();
+        //}
+
+            //Adicionar aqui o método PUT para atualizar dados de endereço do cliente.
+
+            //Adicionar aqui o método GET que retornará o índice de adesão GERAL do plano VIP, para clientes que podem aderir ao plano VIP.
+        }
 }
