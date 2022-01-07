@@ -17,17 +17,13 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
         private readonly IRecuperarDadosDoEnderecoClienteService _recuperarDadosDoEnderecoClienteService;
         private readonly IAlteraEnderecoService _alteraEnderecoService;
         private readonly IIndiceAdesaoGeralService _indiceAdesaoGeralService;
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
 
         public ClienteController(ICadastroClienteService cadastroClienteService, 
                                  IRecuperarClientesPorDataCadastroService recuperarClientesPorDataCadastroService,
                                  IRecuperarClientesPorRendaMensalService recuperarClientesPorRendaMensalService,
                                  IRecuperarDadosDoEnderecoClienteService recuperarDadosDoEnderecoClienteService,
                                  IAlteraEnderecoService alteraEnderecoService,
-                                 IIndiceAdesaoGeralService indiceAdesaoGeralService,
-                                 AppDbContext context, 
-                                 IMapper mapper)
+                                 IIndiceAdesaoGeralService indiceAdesaoGeralService)
         {
             _cadastroClienteService = cadastroClienteService;
             _recuperarClientesPorDataCadastroService = recuperarClientesPorDataCadastroService;
@@ -35,8 +31,6 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
             _recuperarDadosDoEnderecoClienteService = recuperarDadosDoEnderecoClienteService;
             _alteraEnderecoService = alteraEnderecoService;
             _indiceAdesaoGeralService = indiceAdesaoGeralService;
-            _context = context;
-            _mapper = mapper;
         }
 
         [HttpPost("CadastroCliente")]

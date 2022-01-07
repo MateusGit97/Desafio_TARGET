@@ -9,7 +9,9 @@ using Microsoft.OpenApi.Models;
 using System;
 using TARGETInvestimentoDigitalAPI.Data;
 using TARGETInvestimentoDigitalAPI.Interfaces.Clientes;
+using TARGETInvestimentoDigitalAPI.Interfaces.Dominio;
 using TARGETInvestimentoDigitalAPI.Services.Clientes;
+using TARGETInvestimentoDigitalAPI.Services.Dominio;
 
 namespace TARGETInvestimentoDigitalAPI
 {
@@ -40,6 +42,8 @@ namespace TARGETInvestimentoDigitalAPI
             services.AddScoped<IRecuperarDadosDoEnderecoClienteService, RecuperarDadosDoEnderecoClienteService>();
             services.AddScoped<IAlteraEnderecoService, AlteraEnderecoService>();
             services.AddScoped<IIndiceAdesaoGeralService, IndiceAdesaoGeralService>();
+            services.AddScoped<IRecuperaUfsService, RecuperaUfsService>();
+            services.AddScoped<IRecuperaMunicipiosService, RecuperaMunicipiosService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
