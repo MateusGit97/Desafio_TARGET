@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using TARGETInvestimentoDigitalAPI.Data;
+using TARGETInvestimentoDigitalAPI.Interfaces.Clientes;
+using TARGETInvestimentoDigitalAPI.Services.Clientes;
 
 namespace TARGETInvestimentoDigitalAPI
 {
@@ -32,6 +34,12 @@ namespace TARGETInvestimentoDigitalAPI
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+            services.AddScoped<ICadastroClienteService, CadastroClienteService>();
+            services.AddScoped<IRecuperarClientesPorDataCadastroService, RecuperarClientesPorDataCadastroService>();
+            services.AddScoped<IRecuperarClientesPorRendaMensalService, RecuperarClientesPorRendaMensalService>();
+            services.AddScoped<IRecuperarDadosDoEnderecoClienteService, RecuperarDadosDoEnderecoClienteService>();
+            services.AddScoped<IAlteraEnderecoService, AlteraEnderecoService>();
+            services.AddScoped<IIndiceAdesaoGeralService, IndiceAdesaoGeralService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

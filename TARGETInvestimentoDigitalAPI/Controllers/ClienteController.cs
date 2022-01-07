@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TARGETInvestimentoDigitalAPI.Data;
 using TARGETInvestimentoDigitalAPI.Dto.Cliente;
-using TARGETInvestimentoDigitalAPI.Validacoes;
+using TARGETInvestimentoDigitalAPI.Interfaces.Clientes;
 
 namespace TARGETInvestimentoDigitalAPI.Controllers
 {
@@ -14,11 +11,30 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
     [ApiController]
     public class ClienteController : ControllerBase
     {
+        private readonly ICadastroClienteService _cadastroClienteService;
+        private readonly IRecuperarClientesPorDataCadastroService _recuperarClientesPorDataCadastroService;
+        private readonly IRecuperarClientesPorRendaMensalService _recuperarClientesPorRendaMensalService;
+        private readonly IRecuperarDadosDoEnderecoClienteService _recuperarDadosDoEnderecoClienteService;
+        private readonly IAlteraEnderecoService _alteraEnderecoService;
+        private readonly IIndiceAdesaoGeralService _indiceAdesaoGeralService;
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
 
-        public ClienteController(AppDbContext context, IMapper mapper)
+        public ClienteController(ICadastroClienteService cadastroClienteService, 
+                                 IRecuperarClientesPorDataCadastroService recuperarClientesPorDataCadastroService,
+                                 IRecuperarClientesPorRendaMensalService recuperarClientesPorRendaMensalService,
+                                 IRecuperarDadosDoEnderecoClienteService recuperarDadosDoEnderecoClienteService,
+                                 IAlteraEnderecoService alteraEnderecoService,
+                                 IIndiceAdesaoGeralService indiceAdesaoGeralService,
+                                 AppDbContext context, 
+                                 IMapper mapper)
         {
+            _cadastroClienteService = cadastroClienteService;
+            _recuperarClientesPorDataCadastroService = recuperarClientesPorDataCadastroService;
+            _recuperarClientesPorRendaMensalService = recuperarClientesPorRendaMensalService;
+            _recuperarDadosDoEnderecoClienteService = recuperarDadosDoEnderecoClienteService;
+            _alteraEnderecoService = alteraEnderecoService;
+            _indiceAdesaoGeralService = indiceAdesaoGeralService;
             _context = context;
             _mapper = mapper;
         }
@@ -26,119 +42,63 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
         [HttpPost("CadastroCliente")]
         public IActionResult CadastroCliente([FromBody] CreateClienteDto createClienteDto)
         {
-            IList<string> erros = Validacao.GetValidationErrors(createClienteDto).ToList();
-
-            if (!ValidaCPF.IsCpf(createClienteDto.Cpf))
-                erros.Add("CPF invalido");
-
-            if (erros.Any())
-                return BadRequest(erros);                
-
-            Cliente cliente = _mapper.Map<Cliente>(createClienteDto);
-            EnderecoCliente enderecoCliente = _mapper.Map<EnderecoCliente>(createClienteDto.EnderecoClienteDto);
-            FinanceiroCliente financeiroCliente = _mapper.Map<FinanceiroCliente>(createClienteDto.FinanceiroClienteDto);
-            cliente.EnderecoClientes.Add(enderecoCliente);
-            cliente.FinanceiroClientes.Add(financeiroCliente);
-            bool clienteCadastrado = true;
             try
             {
-                _context.Clientes.Add(cliente);
-                _context.SaveChanges();
+                return Created("", _cadastroClienteService.Executar(createClienteDto));
             }
-            catch (System.Exception)
+            catch (Exception e)
             {
-                clienteCadastrado = false;
+                return BadRequest(e.Message);
             }
-
-            ReadClienteDto readClienteDto = new ReadClienteDto
-            {
-                Cadastrado = clienteCadastrado,
-                OferecerPlanoVip = financeiroCliente.RendaMensal >= 6000
-            };
-
-            return Created("", readClienteDto);
         }
 
         [HttpGet("por-periodo")]
-        public IActionResult RecuperaClientesPorDataCadastro([FromQuery] DateTime dataCadastroInicio, [FromQuery] DateTime dataCadastroFim)
-        {
-            IEnumerable<Cliente> clientes = _context.Clientes.Where(cliente => cliente.DataCadastro.Date >= dataCadastroInicio.Date && cliente.DataCadastro.Date <= dataCadastroFim.Date).ToList();
-            if (clientes != null)
-            {
-                IEnumerable<ReadDadosClienteDto> dadosClienteListDto = _mapper.Map<IEnumerable<ReadDadosClienteDto>>(clientes);
-                return Ok(dadosClienteListDto);
-            }
-            return NotFound();
-        }
+        public IActionResult RecuperaClientesPorDataCadastro([FromQuery] DateTime dataCadastroInicio, [FromQuery] DateTime dataCadastroFim) =>
+            Ok(_recuperarClientesPorDataCadastroService.Executar(dataCadastroInicio, dataCadastroFim));
 
         [HttpGet("por-renda-mensal")]
-        public IActionResult RecuperaClientesPorRendaMensal([FromQuery] double rendaMensal)
-        {
-            IEnumerable<Cliente> clientes = _context.Clientes.Where(cliente => cliente.FinanceiroClientes.Any(x => x.RendaMensal >= rendaMensal)).ToList();        
-            if (clientes != null)
-            {
-                IEnumerable<ReadDadosClienteDto> dadosClienteListDto = _mapper.Map<IEnumerable<ReadDadosClienteDto>>(clientes);
-                return Ok(dadosClienteListDto);
-            }
-            return NotFound();
-        }
+        public IActionResult RecuperaClientesPorRendaMensal([FromQuery] double rendaMensal) =>
+            Ok(_recuperarClientesPorRendaMensalService.Executar(rendaMensal));
+
 
         [HttpGet("{cpf}/enderecos")]
         public IActionResult RecuperaDadosDoEnderecoCliente([FromRoute] string cpf)
         {
-            var cliente = _context.Clientes.Include(x => x.EnderecoClientes).FirstOrDefault(cliente => cliente.Cpf == cpf);
-            if (cliente == null)
+            try
             {
-                return NotFound("Cliente não encontrado.");
+                return Ok(_recuperarDadosDoEnderecoClienteService.Executar(cpf));
             }
-            var dadosEnderecoClienteDto = _mapper.Map<IEnumerable<ReadDadosEnderecoClienteDto>>(cliente.EnderecoClientes);
-            
-            return Ok(dadosEnderecoClienteDto);
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPut("{cpf}/enderecos/{idEndereco}")]
         public IActionResult AlteraEndereco([FromRoute] string cpf, [FromRoute] int idEndereco, [FromBody] UpdateEnderecoClienteDto updateEnderecoCliente)
         {
-            var cliente = _context.Clientes.FirstOrDefault(cliente => cliente.Cpf == cpf);
-            if (cliente == null)
+            try
             {
-                return NotFound("Cliente não encontrado.");
+                _alteraEnderecoService.Executar(cpf, idEndereco, updateEnderecoCliente);
+                return NoContent();
             }
-            var endereco = _context.EnderecoClientes.FirstOrDefault(endereco => endereco.Id == idEndereco);
-            if (endereco == null)
+            catch (Exception e)
             {
-                return NotFound("Endereco do cliente não encontrado.");
+                return BadRequest(e.Message);
             }
-
-            endereco.Logradouro = updateEnderecoCliente.Logradouro;
-            endereco.Bairro = updateEnderecoCliente.Bairro;
-            endereco.Cidade = updateEnderecoCliente.Cidade;
-            endereco.Uf = updateEnderecoCliente.Uf;
-            endereco.Cep = updateEnderecoCliente.Cep;
-            endereco.Complemento = updateEnderecoCliente.Complemento;
-
-            _context.SaveChanges();
-
-            return NoContent();
         }
 
         [HttpGet("indice-adesao-geral")]
         public IActionResult IndiceAdesaoGeral()
         {
-            double clientesEle = _context.Clientes.Where(cliente => cliente.FinanceiroClientes.Any(x => x.RendaMensal >= 6000)).Count();
-            if (clientesEle == 0)
+            try
             {
-                return NotFound("Nenhum cliente elegível encontrado");
+                return Ok(_indiceAdesaoGeralService.Executar());
             }
-            double clientesPlano = _context.ClientesPlanos.Count();
-            if (clientesPlano == 0)
+            catch (Exception e)
             {
-                return NotFound("Nenhum cliente com Plano Vip foi emcontrado.");
+                return BadRequest(e.Message);
             }
-
-            double indiceAdesao = (clientesPlano/clientesEle)*100;
-
-            return Ok(indiceAdesao);
         }
     }
 }
