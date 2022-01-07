@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using TARGETInvestimentoDigitalAPI.Data;
 using TARGETInvestimentoDigitalAPI.Dto.Cliente;
+using TARGETInvestimentoDigitalAPI.Interfaces.PlanoVips;
 
 namespace TARGETInvestimentoDigitalAPI.Controllers
 {
@@ -13,44 +14,36 @@ namespace TARGETInvestimentoDigitalAPI.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IRecuperaPlanosService _recuperaPlanosService;
+        private readonly ICadastroNoPlanoService _cadastroNoPlanoService;
 
-        public PlanoVipController(AppDbContext context, IMapper mapper)
+        public PlanoVipController(AppDbContext context, IMapper mapper, IRecuperaPlanosService recuperaPlanosService,
+            ICadastroNoPlanoService cadastroNoPlanoService)
         {
             _context = context;
             _mapper = mapper;
+            _recuperaPlanosService = recuperaPlanosService;
+            _cadastroNoPlanoService = cadastroNoPlanoService;
         }
 
         [HttpGet]
         public IActionResult RecuperaPlanos()
         {
-            IEnumerable<PlanoVip> planoVips = _context.PlanoVips;
-            IEnumerable<ReadPlanoVipDto> planoVipDtos = _mapper.Map<IEnumerable<ReadPlanoVipDto>>(planoVips);
-            return Ok(planoVipDtos);
+            return Ok(_recuperaPlanosService.Executar());
         }
 
         [HttpPost("CadastroNoPlano")]
         public IActionResult CadastroNoPlano([FromBody] CreateClientesPlanoDto createClientesPlanoDto)
         {
-            var cliente = _context.Clientes.FirstOrDefault(cliente => cliente.Cpf == createClientesPlanoDto.Cpf);
-            if (cliente == null)
+            try
             {
-                return NotFound("Cliente não encontrado.");
+                _cadastroNoPlanoService.Executar(createClientesPlanoDto);
+                return Created("", null);
             }
-            var plano = _context.PlanoVips.FirstOrDefault(plano => plano.Id == createClientesPlanoDto.IdPlanoVip);
-            if (plano == null)
+            catch (Exception e)
             {
-                return NotFound("Plano não encontrado.");
+                return BadRequest(e.Message);
             }
-            ClientesPlano clientesPlano = new ClientesPlano
-            {
-                IdCliente = cliente.Id,
-                IdPlanoVip = plano.Id
-            };
-
-            _context.ClientesPlanos.Add(clientesPlano);
-            _context.SaveChanges();
-
-            return Created("", null);
         }
     }
 }

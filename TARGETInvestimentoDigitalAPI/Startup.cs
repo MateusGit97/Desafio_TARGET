@@ -10,8 +10,10 @@ using System;
 using TARGETInvestimentoDigitalAPI.Data;
 using TARGETInvestimentoDigitalAPI.Interfaces.Clientes;
 using TARGETInvestimentoDigitalAPI.Interfaces.Dominio;
+using TARGETInvestimentoDigitalAPI.Interfaces.PlanoVips;
 using TARGETInvestimentoDigitalAPI.Services.Clientes;
 using TARGETInvestimentoDigitalAPI.Services.Dominio;
+using TARGETInvestimentoDigitalAPI.Services.PlanoVips;
 
 namespace TARGETInvestimentoDigitalAPI
 {
@@ -44,6 +46,8 @@ namespace TARGETInvestimentoDigitalAPI
             services.AddScoped<IIndiceAdesaoGeralService, IndiceAdesaoGeralService>();
             services.AddScoped<IRecuperaUfsService, RecuperaUfsService>();
             services.AddScoped<IRecuperaMunicipiosService, RecuperaMunicipiosService>();
+            services.AddScoped<IRecuperaPlanosService, RecuperaPlanosService>();
+            services.AddScoped<ICadastroNoPlanoService, CadastroNoPlanoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
