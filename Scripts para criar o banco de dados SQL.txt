@@ -1,0 +1,98 @@
+CREATE DATABASE [DatabaseFirstDesafio]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'DatabaseFirstDesfio', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\DatabaseFirstDesfio.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'DatabaseFirstDesfio_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.SQLEXPRESS\MSSQL\DATA\DatabaseFirstDesfio_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT
+GO
+
+CREATE TABLE [dbo].[Cliente](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[NomeCompleto] [varchar](50) NOT NULL,
+	[DataNascimento] [date] NOT NULL,
+	[CPF] [varchar](11) NOT NULL,
+	[DataCadastro] [date] NOT NULL,
+ CONSTRAINT [PK_Cliente] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ClientesPlano](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[IdCliente] [int] NOT NULL,
+	[IdPlanoVip] [int] NOT NULL,
+ CONSTRAINT [PK_ClientesPlano] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ClientesPlano]  WITH CHECK ADD  CONSTRAINT [FK_ClientesPlano_Cliente] FOREIGN KEY([IdCliente])
+REFERENCES [dbo].[Cliente] ([Id])
+GO
+
+ALTER TABLE [dbo].[ClientesPlano] CHECK CONSTRAINT [FK_ClientesPlano_Cliente]
+GO
+
+ALTER TABLE [dbo].[ClientesPlano]  WITH CHECK ADD  CONSTRAINT [FK_ClientesPlano_PlanoVip] FOREIGN KEY([IdPlanoVip])
+REFERENCES [dbo].[PlanoVip] ([Id])
+GO
+
+ALTER TABLE [dbo].[ClientesPlano] CHECK CONSTRAINT [FK_ClientesPlano_PlanoVip]
+GO
+
+CREATE TABLE [dbo].[EnderecoCliente](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Logradouro] [varchar](50) NOT NULL,
+	[Bairro] [varchar](50) NOT NULL,
+	[Cidade] [varchar](50) NOT NULL,
+	[UF] [varchar](2) NOT NULL,
+	[CEP] [varchar](8) NOT NULL,
+	[Complemento] [varchar](50) NULL,
+	[IdCliente] [int] NOT NULL,
+ CONSTRAINT [PK_EnderecoCliente] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[EnderecoCliente]  WITH CHECK ADD  CONSTRAINT [FK_EnderecoCliente_Cliente] FOREIGN KEY([IdCliente])
+REFERENCES [dbo].[Cliente] ([Id])
+GO
+
+ALTER TABLE [dbo].[EnderecoCliente] CHECK CONSTRAINT [FK_EnderecoCliente_Cliente]
+GO
+
+CREATE TABLE [dbo].[FinanceiroCliente](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RendaMensal] [float] NOT NULL,
+	[IdCliente] [int] NOT NULL,
+ CONSTRAINT [PK_FinanceiroCliente] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FinanceiroCliente]  WITH CHECK ADD  CONSTRAINT [FK_FinanceiroCliente_Cliente] FOREIGN KEY([IdCliente])
+REFERENCES [dbo].[Cliente] ([Id])
+GO
+
+ALTER TABLE [dbo].[FinanceiroCliente] CHECK CONSTRAINT [FK_FinanceiroCliente_Cliente]
+GO
+
+CREATE TABLE [dbo].[PlanoVip](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Descricao] [varchar](500) NOT NULL,
+	[Preco] [float] NOT NULL,
+ CONSTRAINT [PK_PlanoVip] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
